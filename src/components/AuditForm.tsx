@@ -14,7 +14,7 @@ import {
   TIMEFRAMES,
 } from '@/types/audit'
 import StepIndicator from './StepIndicator'
-import { FormField, Select, TextInput, CheckboxGroup, RadioGroup } from './FormField'
+import { FormField, Select, TextInput, Textarea, CheckboxGroup, RadioGroup } from './FormField'
 
 const STEPS = [
   { label: 'Company', icon: '1' },
@@ -29,6 +29,7 @@ const DEFAULT_FORM: AuditFormData = {
   industry: '',
   teamSize: '',
   annualRevenue: '',
+  businessDescription: '',
   currentTools: [],
   customTools: '',
   dataInfrastructure: '',
@@ -36,8 +37,11 @@ const DEFAULT_FORM: AuditFormData = {
   aiExperience: '',
   budgetRange: '',
   primaryGoals: [],
+  specificAiUseCase: '',
+  biggestPainPoint: '',
   biggestChallenges: [],
   timeframe: '',
+  successMetric: '',
   contactName: '',
   email: '',
   jobTitle: '',
@@ -65,6 +69,7 @@ export default function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
       if (!form.companyName.trim()) newErrors.companyName = 'Required'
       if (!form.industry) newErrors.industry = 'Required'
       if (!form.teamSize) newErrors.teamSize = 'Required'
+      if (!form.businessDescription.trim()) newErrors.businessDescription = 'Required'
     }
 
     if (s === 1) {
@@ -79,6 +84,8 @@ export default function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
 
     if (s === 3) {
       if (form.primaryGoals.length === 0) newErrors.primaryGoals = 'Select at least one goal'
+      if (!form.specificAiUseCase.trim()) newErrors.specificAiUseCase = 'Required'
+      if (!form.biggestPainPoint.trim()) newErrors.biggestPainPoint = 'Required'
       if (form.biggestChallenges.length === 0) newErrors.biggestChallenges = 'Select at least one challenge'
     }
 
@@ -150,6 +157,20 @@ export default function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
                 onChange={(v) => update('annualRevenue', v)}
                 options={REVENUE_RANGES}
                 placeholder="Select range (optional)"
+              />
+            </FormField>
+
+            <FormField
+              label="What does your business do?"
+              required
+              hint="Describe what you do, who your customers are, and how you make money."
+              error={errors.businessDescription}
+            >
+              <Textarea
+                value={form.businessDescription}
+                onChange={(v) => update('businessDescription', v)}
+                placeholder="e.g. We run a 3PL logistics company managing warehouse operations for 50+ e-commerce brands. We handle order fulfilment, returns, and inventory tracking. Our main challenge is manual processes slowing down order accuracy."
+                rows={4}
               />
             </FormField>
           </div>
@@ -238,6 +259,34 @@ export default function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
             <p className="text-sm text-gray-500 mb-6">Select up to 3 in each category.</p>
 
             <FormField
+              label="What specifically do you want AI to do for your business?"
+              required
+              hint="Be as specific as possible — the more detail, the better your report."
+              error={errors.specificAiUseCase}
+            >
+              <Textarea
+                value={form.specificAiUseCase}
+                onChange={(v) => update('specificAiUseCase', v)}
+                placeholder="e.g. I want to automate the quoting process — right now my sales team spends 3 hours manually building quotes in Excel. I also want to use AI to analyse customer churn patterns in our CRM data."
+                rows={3}
+              />
+            </FormField>
+
+            <FormField
+              label="What is your biggest operational pain point right now?"
+              required
+              hint="The problem costing you the most time or money today."
+              error={errors.biggestPainPoint}
+            >
+              <Textarea
+                value={form.biggestPainPoint}
+                onChange={(v) => update('biggestPainPoint', v)}
+                placeholder="e.g. Our support team handles 500+ tickets a week manually. Most are repeat questions. We have no triage system so urgent issues get missed."
+                rows={3}
+              />
+            </FormField>
+
+            <FormField
               label="Primary business goals for AI"
               hint="Select up to 3"
               error={errors.primaryGoals}
@@ -269,6 +318,18 @@ export default function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
                 onChange={(v) => update('timeframe', v)}
                 options={TIMEFRAMES}
                 placeholder="When do you want results?"
+              />
+            </FormField>
+
+            <FormField
+              label="How would you measure AI success in 12 months?"
+              hint="What would need to be true for this to be worth it?"
+            >
+              <Textarea
+                value={form.successMetric}
+                onChange={(v) => update('successMetric', v)}
+                placeholder="e.g. Cut manual admin time by 50%, reduce customer response time from 24hrs to 2hrs, or generate an extra £200K in revenue without hiring."
+                rows={2}
               />
             </FormField>
           </div>

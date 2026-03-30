@@ -17,23 +17,37 @@ THEIR SPECIFIC SITUATION:
 - Industry: ${data.industry}
 - Team: ${data.teamSize} people${data.annualRevenue ? `, revenue ${data.annualRevenue}` : ''}
 - Contact: ${data.contactName}${data.jobTitle ? `, ${data.jobTitle}` : ''}
+
+WHAT THEY ACTUALLY DO (use this to make the report ultra-specific):
+"${data.businessDescription}"
+
+WHAT THEY WANT AI TO DO FOR THEM SPECIFICALLY:
+"${data.specificAiUseCase}"
+
+THEIR BIGGEST OPERATIONAL PAIN POINT RIGHT NOW:
+"${data.biggestPainPoint}"
+
+HOW THEY MEASURE SUCCESS:
+"${data.successMetric || 'Not specified'}"
+
+TECHNOLOGY & MATURITY:
 - Current tools: ${tools || 'Not specified'}
 - Data setup: ${data.dataInfrastructure || 'Not specified'}
 - AI usage today: ${data.currentAiUsage}
 - Team AI experience: ${data.aiExperience || 'Not specified'}
 - AI budget: ${data.budgetRange || 'Not allocated'}
-- What they want from AI: ${data.primaryGoals.join(', ')}
+- High-level goals: ${data.primaryGoals.join(', ')}
 - What's holding them back: ${data.biggestChallenges.join(', ')}
 - Timeframe: ${data.timeframe || 'Not specified'}
 
 CRITICAL RULES FOR THIS REPORT:
-1. Every sentence must reference ${data.companyName}, their industry (${data.industry}), or their specific tools/situation. Zero generic statements.
-2. The executiveSummary must feel like it was written specifically for ${data.contactName} at ${data.companyName} — mention their industry dynamics, their specific tools, and their stated goals.
-3. Category scores must reflect their ACTUAL situation (e.g. if they use spreadsheets, data score is low; if they have no AI budget, strategy score is low).
-4. Recommendations: show WHAT needs to be done and WHY it matters for ${data.companyName} specifically — but NOT the detailed HOW. The how is reserved for the strategy call. Each description should end with a teaser like "This alone could [specific business outcome relevant to their goals] — the exact approach depends on your specific workflow."
-5. Quick wins: give 2-3 genuinely specific, immediately actionable wins using tools they ALREADY have (${tools}). These should feel like insider tips.
-6. Roadmap phases: name the initiatives specifically for ${data.industry} and their goals, but keep them at the "what" level not the "how" level.
-7. The nextSteps field must be a compelling, personalised paragraph that creates genuine urgency based on their specific situation and challenges.
+1. The business description, specific AI use case, and pain point fields above are your most important inputs. Build the ENTIRE report around what they told you — not around the industry in general.
+2. The executiveSummary must directly reference what they said they do ("${data.businessDescription.slice(0, 80)}..."), their specific pain point, and their specific AI use case. No generic statements.
+3. Category scores must reflect their ACTUAL situation. Base data score on their actual data setup. Base strategy score on their budget and whether they have a specific use case in mind.
+4. Recommendations must address their specific pain point and use case directly. Name the actual process or problem they described. Show WHAT needs to change and WHY — but NOT the step-by-step HOW. End each high-priority recommendation with a specific business outcome they would get (e.g. "cutting quote time from 3 hours to 10 minutes").
+5. Quick wins: give 2-3 things they can do THIS WEEK using tools they already mentioned (${tools || 'their existing stack'}), directly addressing their stated pain point.
+6. Roadmap: name phases around their specific use case and pain point, not generic AI adoption steps.
+7. nextSteps: reference their specific score, their specific use case, and what a strategy call would unlock for them personally.
 
 Generate ONLY valid JSON, no other text:
 
@@ -225,6 +239,14 @@ function buildInternalEmailHtml(data: AuditFormData, report: AuditReport): strin
       <tr><td style="padding:5px 0;color:#6b7280">Tools</td><td style="padding:5px 0">${[...data.currentTools, data.customTools].filter(Boolean).join(', ') || 'Not specified'}</td></tr>
       <tr><td style="padding:5px 0;color:#6b7280">Goals</td><td style="padding:5px 0">${data.primaryGoals.join(', ')}</td></tr>
       <tr><td style="padding:5px 0;color:#6b7280">Challenges</td><td style="padding:5px 0">${data.biggestChallenges.join(', ')}</td></tr>
+    </table>
+
+    <h2 style="font-size:15px;margin:0 0 8px">What They Told Us</h2>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;font-size:13px">
+      <tr><td style="padding:8px 0;color:#6b7280;vertical-align:top;width:160px">What they do</td><td style="padding:8px 0;color:#374151;line-height:1.6">${data.businessDescription}</td></tr>
+      <tr style="border-top:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280;vertical-align:top">Specific AI use case</td><td style="padding:8px 0;color:#374151;line-height:1.6">${data.specificAiUseCase}</td></tr>
+      <tr style="border-top:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280;vertical-align:top">Biggest pain point</td><td style="padding:8px 0;color:#374151;line-height:1.6">${data.biggestPainPoint}</td></tr>
+      ${data.successMetric ? `<tr style="border-top:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280;vertical-align:top">Success metric</td><td style="padding:8px 0;color:#374151;line-height:1.6">${data.successMetric}</td></tr>` : ''}
     </table>
 
     <h2 style="font-size:15px;margin:0 0 12px">Category Scores</h2>

@@ -4,6 +4,7 @@ export interface AuditFormData {
   industry: string
   teamSize: string
   annualRevenue: string
+  businessDescription: string   // What does your business do?
 
   // Step 2: Current tech
   currentTools: string[]
@@ -17,8 +18,11 @@ export interface AuditFormData {
 
   // Step 4: Goals & challenges
   primaryGoals: string[]
+  specificAiUseCase: string     // What specifically do you want AI to do?
+  biggestPainPoint: string      // Biggest operational bottleneck right now
   biggestChallenges: string[]
   timeframe: string
+  successMetric: string         // How would you measure success in 12 months?
 
   // Lead capture
   contactName: string

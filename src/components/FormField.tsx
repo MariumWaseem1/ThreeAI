@@ -125,6 +125,25 @@ export function CheckboxGroup({ options, selected, onChange, maxSelect }: Checkb
   )
 }
 
+interface TextareaProps {
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  rows?: number
+}
+
+export function Textarea({ value, onChange, placeholder, rows = 3 }: TextareaProps) {
+  return (
+    <textarea
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      rows={rows}
+      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all resize-none"
+    />
+  )
+}
+
 interface RadioGroupProps {
   options: string[]
   value: string
