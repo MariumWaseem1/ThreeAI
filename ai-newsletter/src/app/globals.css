@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --beige-50: #fdfcfb;
+  --beige-100: #faf7f4;
+  --beige-200: #f2ece5;
+  --beige-300: #e8ddd4;
+  --rose-400: #d4623a;
+  --rose-500: #c9956b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #faf7f4;
+  color: #3d2b1f;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f2ece5;
+}
+::-webkit-scrollbar-thumb {
+  background: #c9956b;
+  border-radius: 3px;
+}
+
+/* Smooth transitions */
+a, button {
+  transition: all 0.2s ease;
+}
