@@ -260,14 +260,15 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
 
           {/* Recommendations */}
           <section>
-            <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
               <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center">
                 <svg className="w-3.5 h-3.5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
               </span>
-              Recommendations
+              Priority Actions
             </h2>
+            <p className="text-xs text-gray-500 mb-4">What needs to change — the detailed implementation plan is covered in your strategy call.</p>
             {[
               { label: 'High Priority', items: highPriority },
               { label: 'Medium Priority', items: mediumPriority },
@@ -287,14 +288,19 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
                           </span>
                         </div>
                         <p className="text-xs text-gray-600 mb-3">{rec.description}</p>
-                        <div className="flex items-center gap-4 text-xs text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <span className="font-medium text-gray-700">Impact:</span> {rec.estimatedImpact}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="font-medium text-gray-700">Effort:</span> {rec.estimatedEffort}
-                          </span>
-                          <span className="text-gray-400">{rec.category}</span>
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <span><span className="font-medium text-gray-700">Impact:</span> {rec.estimatedImpact}</span>
+                            <span><span className="font-medium text-gray-700">Effort:</span> {rec.estimatedEffort}</span>
+                          </div>
+                          {rec.priority === 'high' && (
+                            <a
+                              href={`mailto:mariumw784@gmail.com?subject=AI%20Strategy%20Call%20-%20${encodeURIComponent(report.companyName)}`}
+                              className="text-xs text-brand-600 font-semibold hover:underline whitespace-nowrap"
+                            >
+                              Get the plan →
+                            </a>
+                          )}
                         </div>
                       </div>
                     )
@@ -302,18 +308,34 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
                 </div>
               </div>
             ))}
+
+            {/* Mid-report CTA */}
+            <div className="bg-brand-50 border border-brand-100 rounded-xl p-5 mt-2">
+              <p className="text-sm font-semibold text-brand-900 mb-1">Want the step-by-step implementation plan?</p>
+              <p className="text-xs text-brand-700 mb-3">A 30-minute call turns these findings into a concrete action plan built around your specific team, tools, and goals.</p>
+              <a
+                href={`mailto:mariumw784@gmail.com?subject=AI%20Strategy%20Call%20-%20${encodeURIComponent(report.companyName)}&body=Hi%20Marium%2C%20I%20just%20completed%20the%20AI%20Readiness%20Audit%20and%20scored%20${report.overallScore}%2F100.%20I%27d%20love%20to%20discuss%20next%20steps.`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700 transition-all"
+              >
+                Book a Free Strategy Call
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </a>
+            </div>
           </section>
 
           {/* Roadmap */}
           <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
               <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center">
                 <svg className="w-3.5 h-3.5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
               </span>
-              Implementation Roadmap
+              Your AI Roadmap Overview
             </h2>
+            <p className="text-xs text-gray-500 mb-4">High-level phases for {report.companyName}. Full milestones, owners, and sequencing are mapped out in your strategy call.</p>
             <div className="space-y-5">
               {report.roadmap.map((phase, i) => (
                 <div key={i} className="flex gap-4">
@@ -411,14 +433,16 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
 
           {/* Next Steps CTA */}
           <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl p-5 text-white">
-            <h3 className="text-sm font-bold mb-2">Ready to take action?</h3>
+            <p className="text-xs text-brand-300 font-semibold uppercase tracking-wider mb-2">Your Score: {report.overallScore}/100</p>
+            <h3 className="text-sm font-bold mb-2">Turn this report into a plan</h3>
             <p className="text-xs text-brand-200 leading-relaxed mb-4">{report.nextSteps}</p>
             <a
-              href="mailto:mariumw784@gmail.com?subject=AI%20Readiness%20Audit%20Follow-up"
+              href={`mailto:mariumw784@gmail.com?subject=AI%20Strategy%20Call%20-%20${encodeURIComponent(report.companyName)}&body=Hi%20Marium%2C%20I%20completed%20the%20AI%20Readiness%20Audit%20for%20${encodeURIComponent(report.companyName)}%20and%20scored%20${report.overallScore}%2F100.%20I%27d%20love%20to%20discuss%20a%20tailored%20AI%20strategy.`}
               className="block w-full text-center text-xs font-semibold bg-white text-brand-700 rounded-lg py-2.5 hover:bg-brand-50 transition-all"
             >
-              Book a Free Strategy Call
+              Book a Free 30-Min Strategy Call
             </a>
+            <p className="text-xs text-brand-300 text-center mt-2">mariumw784@gmail.com</p>
           </div>
         </div>
       </div>
