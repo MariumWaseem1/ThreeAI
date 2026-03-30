@@ -110,7 +110,7 @@ export default function Home() {
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Something went wrong</h2>
           <p className="text-sm text-gray-500 mb-2">{error}</p>
-          <p className="text-xs text-gray-400 mb-6">Make sure your GEMINI_API_KEY is set in .env.local</p>
+          <p className="text-xs text-gray-400 mb-6">Make sure your ANTHROPIC_API_KEY is set in .env.local</p>
           <button
             onClick={() => setState('form')}
             className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700 transition-all"
