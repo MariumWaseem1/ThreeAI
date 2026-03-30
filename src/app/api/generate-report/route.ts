@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const model = client.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = client.getGenerativeModel({ model: 'gemini-2.0-flash' })
     const result = await model.generateContent(buildPrompt(data))
     const response = await result.response
 
