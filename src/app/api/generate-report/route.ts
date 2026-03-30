@@ -1,8 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
 import type { AuditFormData, AuditReport } from '@/types/audit'
 
-const client = new Anthropic()
+const client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 function buildPrompt(data: AuditFormData): string {
   return `You are an expert AI strategy consultant. Generate a comprehensive, actionable AI Readiness Audit Report for the following business.
@@ -116,24 +116,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const message = await client.messages.create({
-      model: 'claude-opus-4-6',
-      max_tokens: 4096,
-      messages: [
-        {
-          role: 'user',
-          content: buildPrompt(data),
-        },
-      ],
-    })
-
-    const content = message.content[0]
-    if (content.type !== 'text') {
-      throw new Error('Unexpected response type from Claude')
-    }
+    const model = client.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const result = await model.generateContent(buildPrompt(data))
+    const response = await result.response
 
     // Strip markdown code fences if present
-    let jsonText = content.text.trim()
+    let jsonText = response.text().trim()
     if (jsonText.startsWith('```')) {
       jsonText = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '')
     }
