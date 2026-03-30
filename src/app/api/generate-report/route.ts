@@ -125,11 +125,12 @@ export async function POST(req: NextRequest) {
     const content = message.content[0]
     if (content.type !== 'text') throw new Error('Unexpected response type')
 
-    // Strip markdown code fences if present
+    // Extract JSON robustly — find first { and last }
     let jsonText = content.text.trim()
-    if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '')
-    }
+    const start = jsonText.indexOf('{')
+    const end = jsonText.lastIndexOf('}')
+    if (start === -1 || end === -1) throw new Error('No JSON found in response')
+    jsonText = jsonText.slice(start, end + 1)
 
     const reportData = JSON.parse(jsonText)
 
