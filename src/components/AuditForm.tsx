@@ -17,11 +17,11 @@ import StepIndicator from './StepIndicator'
 import { FormField, Select, TextInput, CheckboxGroup, RadioGroup } from './FormField'
 
 const STEPS = [
-  { label: 'Company', icon: '🏢' },
-  { label: 'Tech Stack', icon: '🔧' },
-  { label: 'AI Maturity', icon: '🤖' },
-  { label: 'Goals', icon: '🎯' },
-  { label: 'Contact', icon: '✉️' },
+  { label: 'Company', icon: '1' },
+  { label: 'Tech Stack', icon: '2' },
+  { label: 'AI Maturity', icon: '3' },
+  { label: 'Goals', icon: '4' },
+  { label: 'Contact', icon: '5' },
 ]
 
 const DEFAULT_FORM: AuditFormData = {
@@ -333,7 +333,7 @@ export default function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
               ${step === 0 ? 'invisible' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}
             `}
           >
-            ← Back
+            Back
           </button>
 
           <div className="text-xs text-gray-400">
@@ -346,7 +346,7 @@ export default function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
               onClick={nextStep}
               className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700 active:bg-brand-800 transition-all shadow-sm"
             >
-              Continue →
+              Continue
             </button>
           ) : (
             <button

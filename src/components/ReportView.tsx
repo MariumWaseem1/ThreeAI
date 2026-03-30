@@ -70,7 +70,6 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
   const colors = getReadinessColor(report.readinessLevel)
 
   async function handleDownload() {
-    // Dynamic import to avoid SSR issues
     const { default: jsPDF } = await import('jspdf')
     const { default: autoTable } = await import('jspdf-autotable')
 
@@ -79,7 +78,6 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
     const pageWidth = doc.internal.pageSize.getWidth()
     let y = margin
 
-    // Header
     doc.setFillColor(79, 70, 229)
     doc.rect(0, 0, pageWidth, 35, 'F')
     doc.setTextColor(255, 255, 255)
@@ -93,13 +91,11 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
     y = 50
     doc.setTextColor(30, 30, 30)
 
-    // Overall Score
     doc.setFontSize(14)
     doc.setFont('helvetica', 'bold')
     doc.text(`Overall Score: ${report.overallScore}/100 — ${report.readinessLevel}`, margin, y)
     y += 12
 
-    // Executive Summary
     doc.setFontSize(12)
     doc.setFont('helvetica', 'bold')
     doc.text('Executive Summary', margin, y)
@@ -110,7 +106,6 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
     doc.text(summaryLines, margin, y)
     y += summaryLines.length * 5 + 10
 
-    // Category Scores
     doc.setFontSize(12)
     doc.setFont('helvetica', 'bold')
     doc.text('Category Scores', margin, y)
@@ -129,7 +124,6 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     y = (doc as any).lastAutoTable.finalY + 12
 
-    // Recommendations
     if (y > 240) { doc.addPage(); y = margin }
     doc.setFontSize(12)
     doc.setFont('helvetica', 'bold')
@@ -149,7 +143,6 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     y = (doc as any).lastAutoTable.finalY + 12
 
-    // Quick Wins
     if (y > 240) { doc.addPage(); y = margin }
     doc.setFontSize(12)
     doc.setFont('helvetica', 'bold')
@@ -163,7 +156,6 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
     })
     y += 6
 
-    // Roadmap
     if (y > 200) { doc.addPage(); y = margin }
     doc.setFontSize(12)
     doc.setFont('helvetica', 'bold')
@@ -237,7 +229,11 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
           {/* Executive Summary */}
           <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
             <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center text-xs">📋</span>
+              <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </span>
               Executive Summary
             </h2>
             <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
@@ -248,7 +244,11 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
           {/* Category Scores */}
           <section>
             <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center text-xs">📊</span>
+              <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </span>
               Readiness by Category
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -261,7 +261,11 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
           {/* Recommendations */}
           <section>
             <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center text-xs">💡</span>
+              <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              </span>
               Recommendations
             </h2>
             {[
@@ -303,7 +307,11 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
           {/* Roadmap */}
           <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
             <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center text-xs">🗺️</span>
+              <span className="w-6 h-6 bg-brand-100 rounded-lg flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+              </span>
               Implementation Roadmap
             </h2>
             <div className="space-y-5">
@@ -325,14 +333,14 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
                     <ul className="space-y-1 mb-2">
                       {phase.initiatives.map((init, j) => (
                         <li key={j} className="text-xs text-gray-600 flex items-start gap-1.5">
-                          <span className="text-brand-400 mt-0.5">→</span> {init}
+                          <span className="text-brand-400 mt-0.5">-</span> {init}
                         </li>
                       ))}
                     </ul>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {phase.expectedOutcomes.map((outcome, j) => (
                         <span key={j} className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full border border-green-100">
-                          ✓ {outcome}
+                          {outcome}
                         </span>
                       ))}
                     </div>
@@ -394,7 +402,7 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
             <ul className="space-y-2">
               {report.quickWins.map((win, i) => (
                 <li key={i} className="text-xs text-blue-700 flex items-start gap-2">
-                  <span className="text-blue-400 flex-shrink-0 mt-0.5">→</span>
+                  <span className="text-blue-400 flex-shrink-0 mt-0.5">-</span>
                   {win}
                 </li>
               ))}
@@ -406,7 +414,7 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
             <h3 className="text-sm font-bold mb-2">Ready to take action?</h3>
             <p className="text-xs text-brand-200 leading-relaxed mb-4">{report.nextSteps}</p>
             <a
-              href="mailto:hello@threeai.co?subject=AI%20Readiness%20Audit%20Follow-up"
+              href="mailto:mariumw784@gmail.com?subject=AI%20Readiness%20Audit%20Follow-up"
               className="block w-full text-center text-xs font-semibold bg-white text-brand-700 rounded-lg py-2.5 hover:bg-brand-50 transition-all"
             >
               Book a Free Strategy Call

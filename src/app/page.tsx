@@ -202,39 +202,41 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                icon: '📊',
+                path: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
                 title: 'AI Readiness Score',
                 desc: 'A 0–100 score across 4 key dimensions: Data, Team, Process, and Strategy.',
               },
               {
-                icon: '💡',
+                path: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
                 title: 'Prioritized Recommendations',
                 desc: 'Specific, actionable steps ranked by impact and effort — no generic advice.',
               },
               {
-                icon: '🗺️',
+                path: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7',
                 title: '90-Day Roadmap',
                 desc: 'A phased implementation plan with quick wins and longer-term milestones.',
               },
               {
-                icon: '⚡',
+                path: 'M13 10V3L4 14h7v7l9-11h-7z',
                 title: 'Quick Wins',
                 desc: 'Low-effort, high-impact actions you can start this week to build momentum.',
               },
               {
-                icon: '🔍',
+                path: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
                 title: 'Gap Analysis',
                 desc: 'Clear visibility into the critical gaps holding your AI adoption back.',
               },
               {
-                icon: '📄',
+                path: 'M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
                 title: 'PDF Download',
                 desc: 'Share your report with your team or board — professional and ready to present.',
               },
             ].map((item) => (
               <div key={item.title} className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-xl flex-shrink-0">
-                  {item.icon}
+                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.path} />
+                  </svg>
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
