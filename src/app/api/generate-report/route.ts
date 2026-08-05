@@ -1,9 +1,5 @@
-import Anthropic from '@anthropic-ai/sdk'
-import { Resend } from 'resend'
 import { NextRequest, NextResponse } from 'next/server'
 import type { AuditFormData, AuditReport } from '@/types/audit'
-
-const client = new Anthropic()
 const CONSULTANT_EMAIL = 'mariumw784@gmail.com'
 const BOOKING_LINK = `mailto:${CONSULTANT_EMAIL}?subject=AI%20Strategy%20Call%20Request`
 
@@ -332,6 +328,7 @@ function buildInternalEmailHtml(data: AuditFormData, report: AuditReport): strin
 
 async function sendEmails(data: AuditFormData, report: AuditReport) {
   if (!process.env.RESEND_API_KEY) return
+  const { Resend } = await import('resend')
   const resend = new Resend(process.env.RESEND_API_KEY)
 
   // Send both emails — client copy and internal lead notification
@@ -359,6 +356,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json({ error: 'ANTHROPIC_API_KEY is not configured' }, { status: 500 })
+    }
+
+    const Anthropic = (await import('@anthropic-ai/sdk')).default
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 4096,
