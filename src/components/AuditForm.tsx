@@ -261,13 +261,13 @@ export default function AuditForm({ onSubmit, isLoading }: AuditFormProps) {
             <FormField
               label="What specifically do you want AI to do for your business?"
               required
-              hint="Be as specific as possible — the more detail, the better your report."
+              hint="Be as specific as possible. The more detail, the better your report."
               error={errors.specificAiUseCase}
             >
               <Textarea
                 value={form.specificAiUseCase}
                 onChange={(v) => update('specificAiUseCase', v)}
-                placeholder="e.g. I want to automate the quoting process — right now my sales team spends 3 hours manually building quotes in Excel. I also want to use AI to analyse customer churn patterns in our CRM data."
+                placeholder="e.g. I want to automate the quoting process. Right now my sales team spends 3 hours manually building quotes in Excel. I also want to use AI to analyse customer churn patterns in our CRM data."
                 rows={3}
               />
             </FormField>

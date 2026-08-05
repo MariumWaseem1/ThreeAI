@@ -180,7 +180,7 @@ export default function Home() {
           </h1>
           <p className="text-xl text-gray-600 leading-relaxed mb-10 max-w-2xl mx-auto">
             Get a personalized AI readiness score, identify your biggest gaps, and receive a
-            concrete 90-day action plan — tailored to your industry and team size.
+            concrete 90-day action plan, tailored to your industry and team size.
           </p>
           <button
             onClick={() => setState('form')}
@@ -204,12 +204,12 @@ export default function Home() {
               {
                 path: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
                 title: 'AI Readiness Score',
-                desc: 'A 0–100 score across 4 key dimensions: Data, Team, Process, and Strategy.',
+                desc: 'A 0 to 100 score across 4 key dimensions: Data, Team, Process, and Strategy.',
               },
               {
                 path: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
                 title: 'Prioritized Recommendations',
-                desc: 'Specific, actionable steps ranked by impact and effort — no generic advice.',
+                desc: 'Specific, actionable steps ranked by impact and effort. No generic advice.',
               },
               {
                 path: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7',
@@ -229,7 +229,7 @@ export default function Home() {
               {
                 path: 'M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
                 title: 'PDF Download',
-                desc: 'Share your report with your team or board — professional and ready to present.',
+                desc: 'Share your report with your team or board. Professional and ready to present.',
               },
             ].map((item) => (
               <div key={item.title} className="flex gap-4">

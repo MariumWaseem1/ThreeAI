@@ -6,193 +6,59 @@ const BOOKING_LINK = `mailto:${CONSULTANT_EMAIL}?subject=AI%20Strategy%20Call%20
 function buildPrompt(data: AuditFormData): string {
   const tools = [...data.currentTools, data.customTools].filter(Boolean).join(', ')
 
-  return `You are Marium, a senior AI strategy consultant who has led AI rollouts across financial services, media, legal, and enterprise teams. You use battle-tested frameworks from real engagements — not generic advice. You are writing a personalised AI Readiness Audit for ${data.companyName}, a ${data.teamSize} team in ${data.industry}.
+  return `You are Marium, an AI strategy consultant. Write a concise AI Readiness Audit for ${data.companyName} (${data.teamSize}, ${data.industry}).
 
-THEIR SPECIFIC SITUATION:
-- Company: ${data.companyName}
-- Industry: ${data.industry}
-- Team: ${data.teamSize} people${data.annualRevenue ? `, revenue ${data.annualRevenue}` : ''}
-- Contact: ${data.contactName}${data.jobTitle ? `, ${data.jobTitle}` : ''}
+ABOUT THEM: "${data.businessDescription}"
+AI USE CASE: "${data.specificAiUseCase}"
+PAIN POINT: "${data.biggestPainPoint}"
+SUCCESS METRIC: "${data.successMetric || 'Not specified'}"
+TOOLS: ${tools || 'None'} | DATA: ${data.dataInfrastructure || 'Not specified'} | AI TODAY: ${data.currentAiUsage}
+BUDGET: ${data.budgetRange || 'Not allocated'} | GOALS: ${data.primaryGoals.join(', ')} | BLOCKERS: ${data.biggestChallenges.join(', ')}
 
-WHAT THEY ACTUALLY DO (use this to make the report ultra-specific):
-"${data.businessDescription}"
+INTERNAL METHODOLOGY (guides your analysis, NEVER mention by name in the output):
+- Start with their workflow, not the technology. What do they repeat daily?
+- Score recommendations by Impact, Scale, Security risk, Adoption likelihood.
+- Baseline before changing anything. Translate time savings to cost.
+- Peer demos beat training. First ask should be tiny. Measure adoption at 30 days.
+- Flag ${data.industry} compliance risks if sensitive data is involved.
+- Resistance is usually psychological, not technical. Find one champion first.
 
-WHAT THEY WANT AI TO DO FOR THEM SPECIFICALLY:
-"${data.specificAiUseCase}"
+STRICT OUTPUT RULES:
+1. EVERY field must reference ${data.companyName}, their tools, pain point, or use case. Zero generic statements.
+2. Be extremely concise. Short punchy sentences. No filler. No jargon.
+3. NEVER use em dashes or en dashes. Use periods, commas, or colons only.
+4. Do NOT mention any framework names (TRAIL, DIAGNOSE, etc.) in the output.
+5. Show WHAT and WHY. Never the step-by-step HOW.
+6. Exactly 3 recommendations (2 high, 1 medium).
 
-THEIR BIGGEST OPERATIONAL PAIN POINT RIGHT NOW:
-"${data.biggestPainPoint}"
-
-HOW THEY MEASURE SUCCESS:
-"${data.successMetric || 'Not specified'}"
-
-TECHNOLOGY & MATURITY:
-- Current tools: ${tools || 'Not specified'}
-- Data setup: ${data.dataInfrastructure || 'Not specified'}
-- AI usage today: ${data.currentAiUsage}
-- Team AI experience: ${data.aiExperience || 'Not specified'}
-- AI budget: ${data.budgetRange || 'Not allocated'}
-- High-level goals: ${data.primaryGoals.join(', ')}
-- What's holding them back: ${data.biggestChallenges.join(', ')}
-- Timeframe: ${data.timeframe || 'Not specified'}
-
-YOUR PROPRIETARY FRAMEWORKS (use these to shape the report — they are what make your consultancy unique):
-
-TRAIL FRAMEWORK — Use this to structure the roadmap phases:
-- Translate: Map their business pain point into specific AI-addressable tasks. Never start with the technology — start with the workflow they described. Ask "what does this person actually do 50 times a day?" and build from there.
-- Risk-check: Before recommending any AI tool, identify data jurisdiction issues, compliance requirements for their industry, and what happens if the AI is wrong. For ${data.industry}, flag industry-specific risks.
-- Attempt: Start with ONE use case (their specific one: "${data.specificAiUseCase}"), run a controlled pilot with a small group, measure before and after. Never recommend a big-bang rollout.
-- Instrument: Build feedback loops — track adoption rates, time saved, error rates. The baseline must be measured BEFORE touching anything.
-- Land: Make AI part of onboarding, build a prompt library, ensure the tool survives when the champion leaves. Define success criteria upfront so everyone knows what "done" looks like.
-
-DIAGNOSE FRAMEWORK — Use this to assess Team & Culture score:
-- Talk to BOTH groups: enthusiasts AND sceptics. The real blockers are usually psychological, not technical.
-- Distinguish data quality problems from adoption resistance — they need different solutions.
-- A peer demo from someone at their level beats any formal training session.
-- The first ask should be tiny — "try this one task for one week" not "transform your workflow."
-- Attendance at training is a vanity metric. Measure whether people are still using the tool 30 days later.
-- Specificity drives engagement: "Save 2 hours on weekly reporting" beats "AI will transform your productivity."
-
-PRIORITISE FRAMEWORK — Use this to rank recommendations:
-Score each recommendation on 4 criteria (each 1-5):
-1. Impact: How much time/money does this save or how much revenue does it unlock?
-2. Scale: How many people or processes does this affect?
-3. Security risk: What's the worst case if it goes wrong? (Higher risk = lower priority unless mitigated)
-4. Adoption likelihood: Will the team actually use this given their current culture and skills?
-Communicate priority across ALL teams, not just leadership. Listen for 30 days before locking in priorities. Use the first successful rollout to fund the next one.
-
-MEASURE FRAMEWORK — Use this for the Data Infrastructure assessment and ROI projections:
-- Baseline DURING the Translate phase, not after. If you cannot measure the current state, you cannot prove AI helped.
-- Translate time savings into cost: "4 hours/week x 12 people x average hourly rate = real money."
-- Produce a one-page impact summary every time — executives need a single page, not a dashboard.
-- Validate metrics with team leads, not just management. If the team says the numbers are wrong, they are.
-
-ETHICS & RISK — Use this for compliance and risk assessment:
-- If sensitive data is involved, stop first — do not assume existing permissions cover AI use cases.
-- AI bias is real, especially in hiring, lending, and customer-facing decisions. Flag this for ${data.industry} if relevant.
-- Find a safe way to use AI rather than abandoning the use case entirely.
-- Log and share governance guidance — one team's lesson should protect the whole company.
-
-CRISIS AWARENESS — Reference this in critical gaps if relevant:
-- If AI produces errors in client-facing work, the fix must happen the same day. System fix, not blame.
-- Unapproved tools spreading through the team is a security risk, not just a policy issue. Offer a sanctioned alternative.
-
-LANGUAGE PRINCIPLES (follow these in ALL report text):
-- Never say "you need to adopt AI" — say "here is the specific workflow where AI removes your bottleneck"
-- Never say "your team needs training" — say "your team needs to see a peer use this on a real task"
-- Never say "you should invest in data infrastructure" — say "your [specific system] needs [specific change] before AI can read it"
-- Never say "AI will transform your business" — say "AI can cut [specific task] from [current time] to [target time]"
-- Use phrases like: "The technology is almost never the problem", "Diagnose before prescribing", "Peer stories beat any training you can run"
-
-REAL CASE STUDY PATTERNS (draw on these for recommendations — do not copy verbatim but use the insights):
-- When teams resist AI tools, the issue is usually that leadership mandated without demonstrating value. Fix: find one enthusiastic user, get them results, let them evangelise.
-- When AI adoption drops after initial excitement, it usually means the tool does not fit the actual workflow. Fix: shadow users, find where the friction is, adjust.
-- When a lunch-and-learn about AI gets low attendance, it is because the topic was too generic. Fix: title it around a specific pain point the audience has.
-- When multiple teams want AI but the budget is limited, score opportunities on Impact x Scale x Security x Adoption likelihood. Start with the highest scorer, use its ROI to fund the next.
-- A sceptical executive needs a one-page cost-impact summary with before/after numbers — not a demo.
-- Never recommend a tool without a plan for what happens when the person who set it up leaves.
-
-CRITICAL RULES FOR THIS REPORT:
-1. The business description, specific AI use case, and pain point fields above are your most important inputs. Build the ENTIRE report around what they told you — not around the industry in general.
-2. The executiveSummary must directly reference what they said they do ("${data.businessDescription.slice(0, 80)}..."), their specific pain point, and their specific AI use case. Weave in a TRAIL-informed perspective — show you understand their workflow before prescribing solutions. No generic statements.
-3. Category scores must reflect their ACTUAL situation. Use the DIAGNOSE framework for Team & Culture, MEASURE framework for Data Infrastructure, and PRIORITISE framework for AI Strategy scoring.
-4. Recommendations must address their specific pain point and use case directly. Name the actual process or problem they described. Score each using the PRIORITISE 4-criteria method internally. Show WHAT needs to change and WHY — but NOT the step-by-step HOW (that is what the strategy call unlocks). End each high-priority recommendation with a specific business outcome they would get (e.g. "cutting quote time from 3 hours to 10 minutes").
-5. Quick wins: give 2-3 things they can do THIS WEEK using tools they already mentioned (${tools || 'their existing stack'}), directly addressing their stated pain point. Frame each as "try this one thing" — keep the first ask tiny.
-6. Roadmap: structure the 3 phases using TRAIL methodology (Phase 1 = Translate + Risk-check, Phase 2 = Attempt + Instrument, Phase 3 = Land + Scale). Name each phase around their specific use case and pain point.
-7. nextSteps: reference their specific score, their specific use case, and hint that the strategy call covers the full TRAIL implementation plan, proprietary prompt libraries, and hands-on rollout support that this audit can only diagnose.
-
-Generate ONLY valid JSON, no other text:
-
+Return ONLY valid JSON:
 {
-  "overallScore": <integer 0-100, honestly reflecting their situation>,
+  "overallScore": <0-100>,
   "readinessLevel": <"Emerging"|"Developing"|"Advancing"|"Leading">,
-  "executiveSummary": "<3 paragraphs. Para 1: where ${data.companyName} stands today — reference their specific workflow and what you diagnosed using the TRAIL lens. Para 2: the specific opportunity they are missing and the cost of inaction (translate time to money using MEASURE principles). Para 3: what becomes possible with the right approach — reference their goals of ${data.primaryGoals.slice(0,2).join(' and ')} and hint at the TRAIL methodology without giving away the full implementation.>",
+  "executiveSummary": "<2-3 short sentences. Name ${data.companyName}, their pain point, and the key opportunity. No filler.>",
   "categoryScores": [
-    {
-      "name": "Data Infrastructure",
-      "score": <0-25>,
-      "maxScore": 25,
-      "summary": "<one sentence using MEASURE framework — can they baseline their current state?>",
-      "details": ["<finding referencing their specific tools and data readiness>", "<finding on whether current data can feed AI workflows>", "<finding on measurement capability>"]
-    },
-    {
-      "name": "Team & Culture",
-      "score": <0-25>,
-      "maxScore": 25,
-      "summary": "<one sentence using DIAGNOSE framework — what is the real adoption blocker?>",
-      "details": ["<finding on team readiness and likely resistance patterns>", "<finding on whether they have internal champions>", "<finding on training approach needed>"]
-    },
-    {
-      "name": "Process & Automation",
-      "score": <0-25>,
-      "maxScore": 25,
-      "summary": "<one sentence specific to their industry processes and TRAIL Translate potential>",
-      "details": ["<finding on which workflows are AI-addressable>", "<finding on current automation level>", "<finding on process documentation state>"]
-    },
-    {
-      "name": "AI Strategy",
-      "score": <0-25>,
-      "maxScore": 25,
-      "summary": "<one sentence using PRIORITISE framework — do they have a scored, sequenced plan?>",
-      "details": ["<finding on budget alignment to goals>", "<finding on whether use case is scoped for a pilot>", "<finding on success criteria definition>"]
-    }
+    {"name": "Data Readiness", "score": <0-25>, "maxScore": 25, "summary": "<max 10 words about their data>", "details": ["<max 10 words>", "<max 10 words>"]},
+    {"name": "Team & Culture", "score": <0-25>, "maxScore": 25, "summary": "<max 10 words>", "details": ["<max 10 words>", "<max 10 words>"]},
+    {"name": "Process Maturity", "score": <0-25>, "maxScore": 25, "summary": "<max 10 words>", "details": ["<max 10 words>", "<max 10 words>"]},
+    {"name": "AI Strategy", "score": <0-25>, "maxScore": 25, "summary": "<max 10 words>", "details": ["<max 10 words>", "<max 10 words>"]}
   ],
-  "topStrengths": [
-    "<strength specific to their actual situation — frame as TRAIL-ready advantage>",
-    "<strength>",
-    "<strength>"
-  ],
-  "criticalGaps": [
-    "<gap specific to their situation — name the specific risk or cost of inaction, using MEASURE to quantify where possible>",
-    "<gap framed through DIAGNOSE lens — what will happen if this is not addressed>",
-    "<gap>"
-  ],
+  "topStrengths": ["<max 12 words, specific to them>", "<max 12 words>", "<max 12 words>"],
+  "criticalGaps": ["<max 12 words, name the cost>", "<max 12 words>", "<max 12 words>"],
   "recommendations": [
-    {
-      "priority": "high",
-      "category": "<specific category>",
-      "title": "<specific title naming their industry or tools>",
-      "description": "<2 sentences: what the problem is for ${data.companyName} specifically and what outcome fixing it would unlock — scored using Impact/Scale/Security/Adoption criteria but do NOT reveal the scoring method>",
-      "estimatedImpact": "<High|Medium|Low>",
-      "estimatedEffort": "<timeframe>"
-    }
+    {"priority": "high", "category": "<category>", "title": "<short, name their tools or process>", "description": "<ONE sentence: problem and outcome>", "estimatedImpact": "High", "estimatedEffort": "<timeframe>"},
+    {"priority": "high", "category": "<category>", "title": "<short>", "description": "<ONE sentence>", "estimatedImpact": "High", "estimatedEffort": "<timeframe>"},
+    {"priority": "medium", "category": "<category>", "title": "<short>", "description": "<ONE sentence>", "estimatedImpact": "Medium", "estimatedEffort": "<timeframe>"}
   ],
-  "quickWins": [
-    "<specific actionable win using one of their existing tools: ${tools.split(',')[0] || 'their current stack'} — keep the first ask tiny>",
-    "<specific actionable win framed as a peer-demonstrable result>",
-    "<specific actionable win that creates a measurable baseline>"
-  ],
+  "quickWins": ["<max 15 words using their tools>", "<max 15 words>", "<max 15 words>"],
   "roadmap": [
-    {
-      "phase": "Phase 1: Translate & Risk-Check — ${data.industry} Foundation",
-      "timeframe": "0-90 days",
-      "initiatives": ["<map their specific pain point to AI-addressable tasks>", "<establish baselines using MEASURE methodology>", "<identify and mitigate ${data.industry}-specific risks>"],
-      "expectedOutcomes": ["<outcome: clear pilot scope with success criteria defined>", "<outcome tied to their stated goal>"]
-    },
-    {
-      "phase": "Phase 2: Attempt & Instrument — Controlled Pilot",
-      "timeframe": "90-180 days",
-      "initiatives": ["<run controlled pilot for their specific use case>", "<build feedback loops and track adoption>", "<develop prompt library for their workflows>"],
-      "expectedOutcomes": ["<outcome: measured before/after comparison>", "<outcome: team adoption evidence>"]
-    },
-    {
-      "phase": "Phase 3: Land & Scale — Embed Permanently",
-      "timeframe": "180-365 days",
-      "initiatives": ["<make AI part of onboarding and standard process>", "<expand to second use case funded by first pilot's ROI>", "<build governance framework>"],
-      "expectedOutcomes": ["<outcome tied to their stated goal of ${data.primaryGoals[0] || 'growth'}>", "<outcome: AI survives personnel changes>"]
-    }
+    {"phase": "Foundation", "timeframe": "0-90 days", "initiatives": ["<max 8 words>", "<max 8 words>", "<max 8 words>"], "expectedOutcomes": ["<max 8 words>"]},
+    {"phase": "Pilot", "timeframe": "3-6 months", "initiatives": ["<max 8 words>", "<max 8 words>", "<max 8 words>"], "expectedOutcomes": ["<max 8 words>"]},
+    {"phase": "Scale", "timeframe": "6-12 months", "initiatives": ["<max 8 words>", "<max 8 words>", "<max 8 words>"], "expectedOutcomes": ["<max 8 words>"]}
   ],
-  "nextSteps": "<2-3 sentences. Reference their specific score and their biggest challenge (${data.biggestChallenges[0] || 'adoption'}). Explain that this audit diagnosed WHERE they stand — the strategy call maps out the full implementation using the TRAIL methodology, including a tailored prompt library, pilot design, and rollout plan specific to ${data.industry}. A focused 30-minute session can shortcut months of trial and error.>"
+  "nextSteps": "<1-2 sentences. Reference their score and what a strategy call unlocks for ${data.companyName} specifically.>"
 }
 
-Scoring guide (be honest, not generous):
-- overallScore = sum of 4 category scores
-- Emerging: 0-39, Developing: 40-59, Advancing: 60-79, Leading: 80-100
-- Include 4-6 recommendations (mix of high/medium/low, scored internally using PRIORITISE criteria)
-- If they have no AI budget, AI Strategy score should be 5-10/25 max
-- If they use only spreadsheets, Data Infrastructure should be 3-8/25
-- If they have no AI experience, Team & Culture should reflect DIAGNOSE assessment — even enthusiastic teams without a plan score low
-- Remember: diagnose before prescribing. The report should make the reader think "this consultant truly understands my business" — that is what drives the strategy call booking.`
+Scoring: overallScore = sum of 4 categories. Emerging 0-39, Developing 40-59, Advancing 60-79, Leading 80+. Be honest, not generous. No AI budget = AI Strategy 5-10/25 max.`
 }
 
 function buildClientEmailHtml(data: AuditFormData, report: AuditReport): string {
@@ -258,7 +124,7 @@ function buildClientEmailHtml(data: AuditFormData, report: AuditReport): string 
   </div>
 
   <div style="padding:20px;text-align:center">
-    <p style="color:#9ca3af;font-size:12px;margin:0">ThreeAI — AI Strategy for Growing Businesses</p>
+    <p style="color:#9ca3af;font-size:12px;margin:0">ThreeAI: AI Strategy for Growing Businesses</p>
   </div>
 </div>`
 }
@@ -331,18 +197,18 @@ async function sendEmails(data: AuditFormData, report: AuditReport) {
   const { Resend } = await import('resend')
   const resend = new Resend(process.env.RESEND_API_KEY)
 
-  // Send both emails — client copy and internal lead notification
+  // Send both emails: client copy and internal lead notification
   await Promise.allSettled([
     resend.emails.send({
       from: 'Marium at ThreeAI <onboarding@resend.dev>',
       to: data.email,
-      subject: `Your AI Readiness Score: ${report.overallScore}/100 — ${data.companyName}`,
+      subject: `Your AI Readiness Score: ${report.overallScore}/100 | ${data.companyName}`,
       html: buildClientEmailHtml(data, report),
     }),
     resend.emails.send({
       from: 'AI Readiness Audit <onboarding@resend.dev>',
       to: CONSULTANT_EMAIL,
-      subject: `New Lead: ${data.companyName} — ${report.overallScore}/100 (${report.readinessLevel}) — ${data.contactName}`,
+      subject: `New Lead: ${data.companyName} | ${report.overallScore}/100 (${report.readinessLevel}) | ${data.contactName}`,
       html: buildInternalEmailHtml(data, report),
     }),
   ])

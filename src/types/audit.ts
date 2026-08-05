@@ -121,11 +121,11 @@ export const COMMON_TOOLS = [
 ]
 
 export const AI_USAGE_LEVELS = [
-  'No AI usage — exploring possibilities',
-  'Minimal — one or two tools like ChatGPT for occasional tasks',
-  'Moderate — AI tools used regularly in a few departments',
-  'Significant — AI integrated into key workflows',
-  'Advanced — AI is core to our product or operations',
+  'No AI usage: exploring possibilities',
+  'Minimal: one or two tools like ChatGPT for occasional tasks',
+  'Moderate: AI tools used regularly in a few departments',
+  'Significant: AI integrated into key workflows',
+  'Advanced: AI is core to our product or operations',
 ]
 
 export const BUDGET_RANGES = [
