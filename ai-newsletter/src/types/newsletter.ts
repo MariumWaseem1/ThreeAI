@@ -59,6 +59,7 @@ export interface NewsletterIssue {
   toolSpotlight?: { name: string; description: string; url: string; why: string }
   paperOfTheDay?: { title: string; summary: string; url: string; whyItMatters: string }
   fundingRound?: { company: string; amount: string; what: string; whyItMatters: string }
+  consultantCorner?: string
   quote: { text: string; author: string }
   closingNote: string
 }

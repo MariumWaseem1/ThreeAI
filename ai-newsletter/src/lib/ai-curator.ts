@@ -138,13 +138,23 @@ export async function buildNewsletterIssue(
     publishedAt: a.publishedAt,
   })))
 
-  const prompt = `You are the editor of "Signal" — a premium daily AI newsletter. Today is ${today}.
+  const prompt = `You are the editor of "Signal" — a premium daily AI newsletter by Marium, an AI strategy consultant who has led real AI rollouts across financial services, media, legal, and enterprise teams. Today is ${today}.
 Write today's newsletter issue for ${subscriberName}.
 
 TONE: ${tone}
 DEPTH: ${depth}
 TOPICS OF INTEREST: ${prefs.topics.join(', ')}
 ${prefs.customKeywords ? `CUSTOM FOCUS: ${prefs.customKeywords}` : ''}
+
+MARIUM'S CONSULTANT PERSPECTIVE — weave these insights naturally into story analysis and the closing note:
+- The technology is almost never the problem — adoption, workflow fit, and change management are.
+- Diagnose before prescribing: when covering new AI tools or launches, note what problem they actually solve, not just what they do.
+- Peer stories beat any training: when covering adoption stories, highlight what made it work at the team level.
+- When an AI product fails or has issues, the fix should be systemic (process, guardrails) not blame-based.
+- AI bias is real, especially in hiring, lending, and content moderation. Flag it when relevant.
+- The first step to any AI rollout is mapping the workflow, not choosing the tool (TRAIL methodology).
+- Measure before you touch anything — if you cannot prove the baseline, you cannot prove AI helped.
+- For tool spotlights: note not just what the tool does, but what workflow it fits into and what success looks like.
 
 IMPORTANT: Only reference REAL articles from the list below. Do not invent URLs or article titles. Use ONLY the URLs and titles provided. Every story must come from this list.
 
@@ -165,7 +175,7 @@ Generate a newsletter issue as JSON. Return ONLY valid JSON, no other text:
     "publishedAt": "<date from articles>",
     "category": "<category>",
     "relevanceScore": 9,
-    "deepDive": "<${prefs.depth === 'deep' ? '150-word' : prefs.depth === 'standard' ? '80-word' : '40-word'} analysis: what happened, why it matters, what to watch for>"
+    "deepDive": "<${prefs.depth === 'deep' ? '150-word' : prefs.depth === 'standard' ? '80-word' : '40-word'} analysis: what happened, why it matters, what to watch for. Add a 'Consultant's lens' angle — what should teams actually do about this news?>"
   },
   "stories": [
     {
@@ -176,32 +186,33 @@ Generate a newsletter issue as JSON. Return ONLY valid JSON, no other text:
       "publishedAt": "<date>",
       "category": "<category>",
       "relevanceScore": 7,
-      "aiSummary": "<${depth} summary of this story>"
+      "aiSummary": "<${depth} summary of this story — include a practical 'so what' angle when relevant>"
     }
   ],
   ${prefs.includeTools ? `"toolSpotlight": {
     "name": "<name of a real, relevant AI tool>",
     "description": "<what it does in one sentence>",
     "url": "<real url>",
-    "why": "<why this tool matters right now — 1-2 sentences>"
+    "why": "<why this tool matters right now — 1-2 sentences. Include what workflow it fits and what success looks like, not just features.>"
   },` : ''}
   ${prefs.includeResearch ? `"paperOfTheDay": {
     "title": "<paper title, prefer from arXiv articles above if any>",
     "summary": "<what they did in plain terms>",
     "url": "<url>",
-    "whyItMatters": "<practical implication in 1-2 sentences>"
+    "whyItMatters": "<practical implication in 1-2 sentences — how would a real team use this?>"
   },` : ''}
   ${prefs.includeFunding ? `"fundingRound": {
     "company": "<company name from stories if any funding story exists>",
     "amount": "<funding amount>",
     "what": "<what they build>",
-    "whyItMatters": "<strategic significance in 1 sentence>"
+    "whyItMatters": "<strategic significance in 1 sentence — what does this mean for teams considering this space?>"
   },` : ''}
+  "consultantCorner": "<1-2 sentences of Marium's take on today's biggest theme. Draw from real rollout experience. Could be a pattern she has seen ('Every time I see a team try X without Y, this happens...'), a reframe ('The real story here is not the tool — it is...'), or tactical advice ('If you are evaluating this, start by...'). Write in first person as Marium. Warm but authoritative.>",
   "quote": {
     "text": "<an insightful real quote about AI — thoughtful and relevant to today's theme>",
     "author": "<real person's name>"
   },
-  "closingNote": "<warm 1-2 sentence sign-off from 'Marium' that relates to today's biggest theme. Encourage the reader.>"
+  "closingNote": "<warm 1-2 sentence sign-off from 'Marium' that ties back to the consultant corner insight. Encourage the reader to think about how today's news affects their own workflow. End with a forward-looking thought.>"
 }
 
 Include 4-6 stories total (not counting the top story). Make every summary specific to the actual story content. Do NOT invent articles or URLs.`

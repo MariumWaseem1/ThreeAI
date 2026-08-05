@@ -208,6 +208,23 @@ export function buildEmailHtml(issue: NewsletterIssue, subscriber: Subscriber): 
         <!-- Funding -->
         ${fundingHtml}
 
+        <!-- Consultant's Corner -->
+        ${issue.consultantCorner ? `
+        <tr>
+          <td style="padding:0 0 28px">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(135deg,${C.accentLight},#fdf8f4);border-radius:14px;border:1px solid ${C.border}">
+              <tr>
+                <td style="padding:24px 28px">
+                  <p style="margin:0 0 10px;font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:${C.rose};text-transform:uppercase;letter-spacing:1.5px">Consultant's Corner</p>
+                  <p style="margin:0 0 8px;font-family:Georgia,serif;font-size:15px;color:${C.headline};line-height:1.65;font-style:italic">${issue.consultantCorner}</p>
+                  <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:${C.accent};font-weight:600">— Marium, AI Strategy Consultant</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        ` : ''}
+
         <!-- Quote -->
         <tr>
           <td style="padding:0 0 28px">
