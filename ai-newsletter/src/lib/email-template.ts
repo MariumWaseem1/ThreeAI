@@ -1,6 +1,6 @@
 import type { NewsletterIssue, Subscriber } from '@/types/newsletter'
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || process.env.RENDER_EXTERNAL_URL || 'https://signal-newsletter.onrender.com'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://signal-newsletter.vercel.app'
 
 // Colour palette — warm beige & rose
 const C = {
