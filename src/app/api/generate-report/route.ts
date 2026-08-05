@@ -362,32 +362,48 @@ export async function POST(req: NextRequest) {
 
     const Anthropic = (await import('@anthropic-ai/sdk')).default
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-    const message = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 8192,
-      messages: [{ role: 'user', content: buildPrompt(data) }],
-    })
 
-    const content = message.content[0]
-    if (content.type !== 'text') throw new Error('Unexpected response type')
+    const prompt = buildPrompt(data)
+    let reportData: Record<string, unknown> | null = null
 
-    let jsonText = content.text.trim()
-    const start = jsonText.indexOf('{')
-    const end = jsonText.lastIndexOf('}')
-    if (start === -1 || end === -1) throw new Error('No JSON found in response')
-    jsonText = jsonText.slice(start, end + 1)
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const message = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 8192,
+        messages: [
+          { role: 'user', content: prompt },
+          { role: 'assistant', content: '{' },
+        ],
+      })
 
-    jsonText = jsonText
-      .replace(/,\s*([}\]])/g, '$1')
-      .replace(/[\x00-\x1f]/g, (ch) => ch === '\n' || ch === '\t' ? ch : '')
+      const content = message.content[0]
+      if (content.type !== 'text') continue
 
-    const reportData = JSON.parse(jsonText)
+      let jsonText = '{' + content.text.trim()
+      const end = jsonText.lastIndexOf('}')
+      if (end === -1) continue
+      jsonText = jsonText.slice(0, end + 1)
 
-    const report: AuditReport = {
+      jsonText = jsonText
+        .replace(/,\s*([}\]])/g, '$1')
+        .replace(/[\x00-\x1f]/g, (ch) => ch === '\n' || ch === '\t' ? ch : '')
+        .replace(/:\s*"([^"]*?)(?:"\s*")+/g, ': "$1')
+
+      try {
+        reportData = JSON.parse(jsonText)
+        break
+      } catch {
+        console.error(`[Audit] JSON parse failed on attempt ${attempt + 1}, retrying...`)
+      }
+    }
+
+    if (!reportData) throw new Error('Failed to generate valid report after retries')
+
+    const report = {
       companyName: data.companyName,
       generatedAt: new Date().toISOString(),
       ...reportData,
-    }
+    } as AuditReport
 
     // Send emails non-blocking
     sendEmails(data, report).catch((err) => console.error('Email error:', err))
