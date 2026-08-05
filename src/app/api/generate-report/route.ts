@@ -6,59 +6,130 @@ const BOOKING_LINK = `mailto:${CONSULTANT_EMAIL}?subject=AI%20Strategy%20Call%20
 function buildPrompt(data: AuditFormData): string {
   const tools = [...data.currentTools, data.customTools].filter(Boolean).join(', ')
 
-  return `You are Marium, an AI strategy consultant. Write a concise AI Readiness Audit for ${data.companyName} (${data.teamSize}, ${data.industry}).
+  return `You are Marium, a senior AI strategy consultant. Write a concise, personalised AI Readiness Audit for ${data.companyName}.
 
-ABOUT THEM: "${data.businessDescription}"
-AI USE CASE: "${data.specificAiUseCase}"
-PAIN POINT: "${data.biggestPainPoint}"
-SUCCESS METRIC: "${data.successMetric || 'Not specified'}"
-TOOLS: ${tools || 'None'} | DATA: ${data.dataInfrastructure || 'Not specified'} | AI TODAY: ${data.currentAiUsage}
-BUDGET: ${data.budgetRange || 'Not allocated'} | GOALS: ${data.primaryGoals.join(', ')} | BLOCKERS: ${data.biggestChallenges.join(', ')}
+THEIR SITUATION:
+- Company: ${data.companyName} (${data.industry}, ${data.teamSize} people${data.annualRevenue ? `, revenue ${data.annualRevenue}` : ''})
+- Contact: ${data.contactName}${data.jobTitle ? `, ${data.jobTitle}` : ''}
+- What they do: "${data.businessDescription}"
+- AI use case: "${data.specificAiUseCase}"
+- Pain point: "${data.biggestPainPoint}"
+- Success metric: "${data.successMetric || 'Not specified'}"
+- Tools: ${tools || 'Not specified'}
+- Data setup: ${data.dataInfrastructure || 'Not specified'}
+- AI usage: ${data.currentAiUsage}
+- AI experience: ${data.aiExperience || 'Not specified'}
+- Budget: ${data.budgetRange || 'Not allocated'}
+- Goals: ${data.primaryGoals.join(', ')}
+- Blockers: ${data.biggestChallenges.join(', ')}
+- Timeframe: ${data.timeframe || 'Not specified'}
 
-INTERNAL METHODOLOGY (guides your analysis, NEVER mention by name in the output):
-- Start with their workflow, not the technology. What do they repeat daily?
-- Score recommendations by Impact, Scale, Security risk, Adoption likelihood.
-- Baseline before changing anything. Translate time savings to cost.
-- Peer demos beat training. First ask should be tiny. Measure adoption at 30 days.
-- Flag ${data.industry} compliance risks if sensitive data is involved.
-- Resistance is usually psychological, not technical. Find one champion first.
+ANALYSIS FRAMEWORKS (use to guide your thinking, NEVER mention by name in output):
+- TRAIL: Translate pain into AI tasks, Risk-check for ${data.industry}, Attempt one pilot, Instrument with metrics, Land permanently.
+- DIAGNOSE: Real blockers are psychological not technical. Peer demos beat training. Start tiny.
+- PRIORITISE: Score on Impact, Scale, Security risk, Adoption likelihood.
+- MEASURE: Baseline before changing anything. Translate time saved into cost.
+- ETHICS: Check data permissions, flag bias risks for ${data.industry}, offer safe alternatives.
 
-STRICT OUTPUT RULES:
-1. EVERY field must reference ${data.companyName}, their tools, pain point, or use case. Zero generic statements.
-2. Be extremely concise. Short punchy sentences. No filler. No jargon.
-3. NEVER use em dashes or en dashes. Use periods, commas, or colons only.
-4. Do NOT mention any framework names (TRAIL, DIAGNOSE, etc.) in the output.
-5. Show WHAT and WHY. Never the step-by-step HOW.
-6. Exactly 3 recommendations (2 high, 1 medium).
+WRITING RULES:
+1. NEVER use em dashes. Use colons, commas, or periods instead.
+2. Every single field must reference ${data.companyName}, their specific tools, their pain point, or their use case. Zero generic statements allowed.
+3. Be concise. Short punchy sentences. No filler words. No corporate jargon.
+4. Build everything around their business description, AI use case, and pain point.
+5. Show WHAT needs to change and WHY. Never reveal the step-by-step HOW (that is what the strategy call unlocks).
 
-Return ONLY valid JSON:
+Generate ONLY valid JSON, no other text:
+
 {
-  "overallScore": <0-100>,
+  "overallScore": <integer 0-100, sum of 4 category scores>,
   "readinessLevel": <"Emerging"|"Developing"|"Advancing"|"Leading">,
-  "executiveSummary": "<2-3 short sentences. Name ${data.companyName}, their pain point, and the key opportunity. No filler.>",
+  "executiveSummary": "<2 to 3 SHORT sentences total. Sentence 1: where ${data.companyName} stands now, referencing their actual workflow. Sentence 2: the specific opportunity and cost of inaction. Sentence 3 (optional): what becomes possible. No paragraphs. No filler.>",
   "categoryScores": [
-    {"name": "Data Readiness", "score": <0-25>, "maxScore": 25, "summary": "<max 10 words about their data>", "details": ["<max 10 words>", "<max 10 words>"]},
-    {"name": "Team & Culture", "score": <0-25>, "maxScore": 25, "summary": "<max 10 words>", "details": ["<max 10 words>", "<max 10 words>"]},
-    {"name": "Process Maturity", "score": <0-25>, "maxScore": 25, "summary": "<max 10 words>", "details": ["<max 10 words>", "<max 10 words>"]},
-    {"name": "AI Strategy", "score": <0-25>, "maxScore": 25, "summary": "<max 10 words>", "details": ["<max 10 words>", "<max 10 words>"]}
+    {
+      "name": "Data Infrastructure",
+      "score": <0-25>,
+      "maxScore": 25,
+      "summary": "<max 8 words about their actual data setup>",
+      "details": ["<max 10 words about their specific tools>", "<max 10 words about data readiness>", "<max 10 words about measurement capability>"]
+    },
+    {
+      "name": "Team & Culture",
+      "score": <0-25>,
+      "maxScore": 25,
+      "summary": "<max 8 words about their team's actual AI readiness>",
+      "details": ["<max 10 words about adoption readiness>", "<max 10 words about internal champions>", "<max 10 words about training needs>"]
+    },
+    {
+      "name": "Process & Automation",
+      "score": <0-25>,
+      "maxScore": 25,
+      "summary": "<max 8 words about their specific workflows>",
+      "details": ["<max 10 words about AI-ready workflows>", "<max 10 words about current automation>", "<max 10 words about process documentation>"]
+    },
+    {
+      "name": "AI Strategy",
+      "score": <0-25>,
+      "maxScore": 25,
+      "summary": "<max 8 words about their planning state>",
+      "details": ["<max 10 words about budget vs goals>", "<max 10 words about pilot scoping>", "<max 10 words about success criteria>"]
+    }
   ],
-  "topStrengths": ["<max 12 words, specific to them>", "<max 12 words>", "<max 12 words>"],
-  "criticalGaps": ["<max 12 words, name the cost>", "<max 12 words>", "<max 12 words>"],
+  "topStrengths": [
+    "<max 12 words, specific to ${data.companyName}>",
+    "<max 12 words>",
+    "<max 12 words>"
+  ],
+  "criticalGaps": [
+    "<max 12 words, name the specific risk or cost>",
+    "<max 12 words>",
+    "<max 12 words>"
+  ],
   "recommendations": [
-    {"priority": "high", "category": "<category>", "title": "<short, name their tools or process>", "description": "<ONE sentence: problem and outcome>", "estimatedImpact": "High", "estimatedEffort": "<timeframe>"},
-    {"priority": "high", "category": "<category>", "title": "<short>", "description": "<ONE sentence>", "estimatedImpact": "High", "estimatedEffort": "<timeframe>"},
-    {"priority": "medium", "category": "<category>", "title": "<short>", "description": "<ONE sentence>", "estimatedImpact": "Medium", "estimatedEffort": "<timeframe>"}
+    {
+      "priority": "<high|medium|low>",
+      "category": "<specific category>",
+      "title": "<short title naming their tools or process>",
+      "description": "<1 sentence max. What needs to change for ${data.companyName} and the outcome it unlocks.>",
+      "estimatedImpact": "<High|Medium|Low>",
+      "estimatedEffort": "<timeframe>"
+    }
   ],
-  "quickWins": ["<max 15 words using their tools>", "<max 15 words>", "<max 15 words>"],
+  "quickWins": [
+    "<max 15 words, using their existing tool ${tools.split(',')[0] || 'stack'}>",
+    "<max 15 words, a peer-demonstrable result>",
+    "<max 15 words, creates a measurable baseline>"
+  ],
   "roadmap": [
-    {"phase": "Foundation", "timeframe": "0-90 days", "initiatives": ["<max 8 words>", "<max 8 words>", "<max 8 words>"], "expectedOutcomes": ["<max 8 words>"]},
-    {"phase": "Pilot", "timeframe": "3-6 months", "initiatives": ["<max 8 words>", "<max 8 words>", "<max 8 words>"], "expectedOutcomes": ["<max 8 words>"]},
-    {"phase": "Scale", "timeframe": "6-12 months", "initiatives": ["<max 8 words>", "<max 8 words>", "<max 8 words>"], "expectedOutcomes": ["<max 8 words>"]}
+    {
+      "phase": "Phase 1: Foundation",
+      "timeframe": "0 to 90 days",
+      "initiatives": ["<max 8 words>", "<max 8 words>", "<max 8 words>"],
+      "expectedOutcomes": ["<max 8 words>", "<max 8 words>"]
+    },
+    {
+      "phase": "Phase 2: Pilot",
+      "timeframe": "90 to 180 days",
+      "initiatives": ["<max 8 words>", "<max 8 words>", "<max 8 words>"],
+      "expectedOutcomes": ["<max 8 words>", "<max 8 words>"]
+    },
+    {
+      "phase": "Phase 3: Scale",
+      "timeframe": "180 to 365 days",
+      "initiatives": ["<max 8 words>", "<max 8 words>", "<max 8 words>"],
+      "expectedOutcomes": ["<max 8 words>", "<max 8 words>"]
+    }
   ],
-  "nextSteps": "<1-2 sentences. Reference their score and what a strategy call unlocks for ${data.companyName} specifically.>"
+  "nextSteps": "<1 to 2 short sentences. Reference their score and biggest challenge. The strategy call covers the full implementation plan specific to ${data.industry}.>"
 }
 
-Scoring: overallScore = sum of 4 categories. Emerging 0-39, Developing 40-59, Advancing 60-79, Leading 80+. Be honest, not generous. No AI budget = AI Strategy 5-10/25 max.`
+Scoring guide:
+- overallScore = sum of 4 category scores
+- Emerging: 0 to 39, Developing: 40 to 59, Advancing: 60 to 79, Leading: 80 to 100
+- Include 3 to 4 recommendations (mix of high, medium, low priority)
+- No AI budget: AI Strategy 5 to 10 out of 25 max
+- Spreadsheets only: Data Infrastructure 3 to 8 out of 25
+- No AI experience: Team & Culture scores low even if enthusiastic
+- Make the reader think "this consultant truly understands my business."`
 }
 
 function buildClientEmailHtml(data: AuditFormData, report: AuditReport): string {
@@ -124,7 +195,7 @@ function buildClientEmailHtml(data: AuditFormData, report: AuditReport): string 
   </div>
 
   <div style="padding:20px;text-align:center">
-    <p style="color:#9ca3af;font-size:12px;margin:0">ThreeAI: AI Strategy for Growing Businesses</p>
+    <p style="color:#9ca3af;font-size:12px;margin:0">ThreeAI | AI Strategy for Growing Businesses</p>
   </div>
 </div>`
 }
@@ -197,7 +268,7 @@ async function sendEmails(data: AuditFormData, report: AuditReport) {
   const { Resend } = await import('resend')
   const resend = new Resend(process.env.RESEND_API_KEY)
 
-  // Send both emails: client copy and internal lead notification
+  // Send both emails - client copy and internal lead notification
   await Promise.allSettled([
     resend.emails.send({
       from: 'Marium at ThreeAI <onboarding@resend.dev>',
