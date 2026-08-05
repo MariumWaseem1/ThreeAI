@@ -364,7 +364,7 @@ export async function POST(req: NextRequest) {
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4096,
+      max_tokens: 8192,
       messages: [{ role: 'user', content: buildPrompt(data) }],
     })
 
@@ -376,6 +376,10 @@ export async function POST(req: NextRequest) {
     const end = jsonText.lastIndexOf('}')
     if (start === -1 || end === -1) throw new Error('No JSON found in response')
     jsonText = jsonText.slice(start, end + 1)
+
+    jsonText = jsonText
+      .replace(/,\s*([}\]])/g, '$1')
+      .replace(/[\x00-\x1f]/g, (ch) => ch === '\n' || ch === '\t' ? ch : '')
 
     const reportData = JSON.parse(jsonText)
 
