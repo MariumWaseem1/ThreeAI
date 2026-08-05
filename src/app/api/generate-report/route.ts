@@ -73,7 +73,11 @@ async function fetchIndustryIntelligence(industry: string, useCase: string): Pro
 function buildPrompt(data: AuditFormData, intel: IndustryIntel): string {
   const tools = [...data.currentTools, data.customTools].filter(Boolean).join(', ')
 
-  return `You are Marium, a senior AI strategy consultant. Write a concise, personalised AI Readiness Audit for ${data.companyName}.
+  const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  const hasNews = intel.newsArticles.length > 0
+  const hasReddit = intel.redditInsights.length > 0
+
+  return `You are Marium, a senior AI strategy consultant. Today's date is ${today}. Write a concise, personalised AI Readiness Audit for ${data.companyName}.
 
 THEIR SITUATION:
 - Company: ${data.companyName} (${data.industry}, ${data.teamSize} people${data.annualRevenue ? `, revenue ${data.annualRevenue}` : ''})
@@ -98,14 +102,14 @@ ANALYSIS FRAMEWORKS (use to guide your thinking, NEVER mention by name in output
 - MEASURE: Baseline before changing anything. Translate time saved into cost.
 - ETHICS: Check data permissions, flag bias risks for ${data.industry}, offer safe alternatives.
 
-LIVE INDUSTRY INTELLIGENCE (reference these in your analysis to show up-to-date awareness):
-${intel.newsArticles.length > 0 ? `Recent ${data.industry} AI news:\n${intel.newsArticles.map(a => `- "${a.title}" (${a.source}): ${a.snippet}`).join('\n')}` : `No recent news available for ${data.industry}.`}
-${intel.redditInsights.length > 0 ? `What ${data.industry} teams are discussing on Reddit:\n${intel.redditInsights.map(r => `- "${r.title}" (r/${r.subreddit}, ${r.score} upvotes)`).join('\n')}` : ''}
+LIVE INDUSTRY INTELLIGENCE (sourced just now, ${today}):
+${hasNews ? `Recent ${data.industry} AI news:\n${intel.newsArticles.map(a => `- "${a.title}" (${a.source}): ${a.snippet}`).join('\n')}` : 'No live news feed available.'}
+${hasReddit ? `What ${data.industry} practitioners are discussing on Reddit right now:\n${intel.redditInsights.map(r => `- "${r.title}" (r/${r.subreddit}, ${r.score} upvotes)`).join('\n')}` : 'No live Reddit feed available.'}
 
-Use this intelligence to:
-- Reference specific trends or tools that competitors in ${data.industry} are adopting right now
-- Ground recommendations in what is actually happening in their market this week
-- Make the report feel current and informed, not templated
+CRITICAL: You MUST use the live intelligence above in the industrySnapshot section.
+${hasNews ? '- newsReferences MUST use the exact headlines and sources listed above. Do NOT invent headlines.' : '- No news was fetched. Set newsReferences to an empty array []. Do NOT invent fake headlines or sources.'}
+${hasReddit ? '- communityInsight MUST reference the actual Reddit posts listed above.' : '- No Reddit data was fetched. Set communityInsight to "No live community data available for this report. Ask your consultant for the latest practitioner insights."'}
+- trendingNow and peerMoves: ${hasNews || hasReddit ? 'synthesize from the live data above' : 'write about what you know is happening in ' + data.industry + ' AI adoption as of ' + today + '. Be specific. Do NOT reference any year before 2026.'}
 
 WRITING RULES:
 1. NEVER use em dashes. Use colons, commas, or periods instead.
@@ -113,7 +117,7 @@ WRITING RULES:
 3. Be concise. Short punchy sentences. No filler words. No corporate jargon.
 4. Build everything around their business description, AI use case, and pain point.
 5. Show WHAT needs to change and WHY. Never reveal the step-by-step HOW (that is what the strategy call unlocks).
-6. The industrySnapshot section MUST cite specific headlines, sources, and Reddit discussions from the intelligence above. Do not invent fake headlines. If no news was provided, write about known recent trends in ${data.industry} AI adoption.
+6. The industrySnapshot section MUST use ONLY the live data provided above. Never invent headlines, sources, or Reddit posts. If no live data was provided, follow the fallback instructions exactly.
 7. The pilotBlueprint must describe the EXACT first AI pilot ${data.companyName} should run, using their actual process from "${data.specificAiUseCase}".
 8. The riskRadar must flag risks specific to ${data.industry} and "${data.specificAiUseCase}", not generic AI risks.
 
