@@ -245,6 +245,55 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
         </button>
       </div>
 
+      {/* ========== INDUSTRY SNAPSHOT (full width) ========== */}
+      {report.industrySnapshot && (
+        <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 sm:p-8 mb-8 text-white">
+          <div className="flex items-center gap-2 mb-5">
+            <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            <h2 className="text-lg font-black">What's Happening in Your Industry Right Now</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <p className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-2">Trending Now</p>
+              <p className="text-sm text-slate-200 leading-relaxed">{report.industrySnapshot.trendingNow}</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <p className="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">What Your Peers Are Doing</p>
+              <p className="text-sm text-slate-200 leading-relaxed">{report.industrySnapshot.peerMoves}</p>
+            </div>
+          </div>
+
+          {report.industrySnapshot.newsReferences?.length > 0 && (
+            <div className="mb-4">
+              <p className="text-blue-400 text-xs font-bold uppercase tracking-wider mb-3">Recent Headlines That Affect You</p>
+              <div className="space-y-2">
+                {report.industrySnapshot.newsReferences.map((news, i) => (
+                  <div key={i} className="bg-white/5 rounded-lg p-3 border border-white/10">
+                    <div className="flex items-start gap-2">
+                      <span className="text-blue-400 text-xs font-bold mt-0.5 flex-shrink-0">{news.source}</span>
+                      <div>
+                        <p className="text-sm font-semibold text-white leading-snug">{news.headline}</p>
+                        <p className="text-xs text-slate-400 mt-1">{news.whyItMatters}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {report.industrySnapshot.communityInsight && (
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-purple-400 text-xs font-bold uppercase tracking-wider mb-2">Community Buzz</p>
+              <p className="text-sm text-slate-300 leading-relaxed">{report.industrySnapshot.communityInsight}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* ========== LEFT COLUMN ========== */}
         <div className="lg:col-span-2 space-y-8">
@@ -276,6 +325,40 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
               })}
             </div>
           </section>
+
+          {/* ---------- Pilot Blueprint ---------- */}
+          {report.pilotBlueprint && (
+            <section className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 p-6 sm:p-8">
+              <div className="flex items-center gap-2 mb-5">
+                <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <h2 className="text-xl font-black text-gray-900">Your First AI Pilot</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-white rounded-xl p-4 border border-emerald-100">
+                  <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">Process to Automate</p>
+                  <p className="text-sm text-gray-800 font-medium">{report.pilotBlueprint.processToAutomate}</p>
+                </div>
+                <div className="bg-white rounded-xl p-4 border border-emerald-100">
+                  <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">AI Approach</p>
+                  <p className="text-sm text-gray-800 font-medium">{report.pilotBlueprint.aiApproach}</p>
+                </div>
+                <div className="bg-white rounded-xl p-4 border border-emerald-100">
+                  <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">First 30-Day Milestone</p>
+                  <p className="text-sm text-gray-800 font-medium">{report.pilotBlueprint.firstMilestone}</p>
+                </div>
+                <div className="bg-white rounded-xl p-4 border border-emerald-100">
+                  <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">Metric to Track</p>
+                  <p className="text-sm text-gray-800 font-medium">{report.pilotBlueprint.measureThis}</p>
+                </div>
+              </div>
+              <div className="mt-4 bg-emerald-600 rounded-xl p-4 text-center">
+                <p className="text-emerald-100 text-xs font-bold uppercase tracking-wider mb-1">Estimated 90-Day ROI</p>
+                <p className="text-white text-lg font-black">{report.pilotBlueprint.estimatedROI}</p>
+              </div>
+            </section>
+          )}
 
           {/* ---------- Recommendations ---------- */}
           <section>
@@ -429,6 +512,32 @@ export default function ReportView({ report, onReset }: ReportViewProps) {
               ))}
             </div>
           </div>
+
+          {/* ---------- Risk Radar ---------- */}
+          {report.riskRadar && report.riskRadar.length > 0 && (
+            <div className="bg-amber-50 rounded-2xl border border-amber-100 p-5">
+              <h3 className="text-sm font-black text-amber-900 mb-4 flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Risk Radar
+              </h3>
+              <div className="space-y-3">
+                {report.riskRadar.map((r, i) => {
+                  const sevColor = r.severity === 'high' ? 'bg-red-500' : r.severity === 'medium' ? 'bg-amber-500' : 'bg-green-500'
+                  return (
+                    <div key={i} className="bg-white rounded-lg p-3 border border-amber-100">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`w-2 h-2 rounded-full ${sevColor} flex-shrink-0`} />
+                        <span className="text-xs font-bold text-gray-900">{r.risk}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 pl-4">{r.mitigation}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           {/* ---------- Sidebar CTA ---------- */}
           <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl p-6 text-white">

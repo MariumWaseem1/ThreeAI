@@ -113,14 +113,28 @@ WRITING RULES:
 3. Be concise. Short punchy sentences. No filler words. No corporate jargon.
 4. Build everything around their business description, AI use case, and pain point.
 5. Show WHAT needs to change and WHY. Never reveal the step-by-step HOW (that is what the strategy call unlocks).
-6. Reference at least one specific industry trend from the live intelligence above.
+6. The industrySnapshot section MUST cite specific headlines, sources, and Reddit discussions from the intelligence above. Do not invent fake headlines. If no news was provided, write about known recent trends in ${data.industry} AI adoption.
+7. The pilotBlueprint must describe the EXACT first AI pilot ${data.companyName} should run, using their actual process from "${data.specificAiUseCase}".
+8. The riskRadar must flag risks specific to ${data.industry} and "${data.specificAiUseCase}", not generic AI risks.
 
 Generate ONLY valid JSON, no other text:
 
 {
   "overallScore": <integer 0-100, sum of 4 category scores>,
   "readinessLevel": <"Emerging"|"Developing"|"Advancing"|"Leading">,
-  "executiveSummary": "<2 to 3 SHORT sentences total. Sentence 1: where ${data.companyName} stands now, referencing their actual workflow. Sentence 2: the specific opportunity and cost of inaction. Sentence 3 (optional): what becomes possible. No paragraphs. No filler.>",
+  "executiveSummary": "<2 to 3 SHORT sentences. Sentence 1: where ${data.companyName} stands now with their actual workflow. Sentence 2: the specific opportunity and cost of inaction. Sentence 3 (optional): what becomes possible.>",
+  "industrySnapshot": {
+    "trendingNow": "<1 to 2 sentences. What is the biggest AI trend in ${data.industry} RIGHT NOW? Cite a specific news headline or source from the intelligence above.>",
+    "peerMoves": "<1 to 2 sentences. What are similar-sized ${data.industry} companies (${data.teamSize}) actually doing with AI? Be specific: name the type of solution, the process they're automating, the results they're reporting.>",
+    "newsReferences": [
+      {
+        "headline": "<exact headline from the news intelligence above, or a known recent development>",
+        "source": "<publication name>",
+        "whyItMatters": "<1 sentence: how this specific news affects ${data.companyName}'s situation with ${data.specificAiUseCase}>"
+      }
+    ],
+    "communityInsight": "<1 to 2 sentences. What are real practitioners in ${data.industry} saying about AI adoption? Reference Reddit discussions from the intelligence above if available. What problems or wins are they reporting?>"
+  },
   "categoryScores": [
     {
       "name": "Data Infrastructure",
@@ -171,6 +185,30 @@ Generate ONLY valid JSON, no other text:
       "estimatedEffort": "<timeframe>"
     }
   ],
+  "pilotBlueprint": {
+    "processToAutomate": "<the exact process from their business that should be the first AI pilot, pulled from their use case and pain point>",
+    "aiApproach": "<specific type of AI solution, not generic. Name the technique: document extraction, predictive routing, NLP classification, etc.>",
+    "firstMilestone": "<what ${data.companyName} will see working within 30 days>",
+    "measureThis": "<the exact metric to track, tied to their success metric '${data.successMetric || data.biggestPainPoint}'>",
+    "estimatedROI": "<projected time or cost savings in the first 90 days, be specific with numbers>"
+  },
+  "riskRadar": [
+    {
+      "risk": "<specific risk for ${data.companyName}'s use case in ${data.industry}, not generic 'data privacy' unless truly relevant>",
+      "severity": "<high|medium|low>",
+      "mitigation": "<1 sentence: concrete step to reduce this risk>"
+    },
+    {
+      "risk": "<second specific risk>",
+      "severity": "<high|medium|low>",
+      "mitigation": "<1 sentence>"
+    },
+    {
+      "risk": "<third specific risk>",
+      "severity": "<high|medium|low>",
+      "mitigation": "<1 sentence>"
+    }
+  ],
   "quickWins": [
     "<max 15 words, using their existing tool ${tools.split(',')[0] || 'stack'}>",
     "<max 15 words, a peer-demonstrable result>",
@@ -206,7 +244,10 @@ Scoring guide:
 - No AI budget: AI Strategy 5 to 10 out of 25 max
 - Spreadsheets only: Data Infrastructure 3 to 8 out of 25
 - No AI experience: Team & Culture scores low even if enthusiastic
-- Make the reader think "this consultant truly understands my business."`
+- newsReferences: include 2 to 3 items, pulled from the LIVE INTELLIGENCE above. Use real headlines, not invented ones.
+- riskRadar: exactly 3 risks, specific to their industry and use case
+- pilotBlueprint: must describe one concrete pilot, not a vague "explore AI" suggestion
+- Make the reader think "this consultant researched my industry before writing this."`
 }
 
 function buildClientEmailHtml(data: AuditFormData, report: AuditReport): string {

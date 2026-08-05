@@ -54,16 +54,46 @@ export interface RoadmapItem {
   expectedOutcomes: string[]
 }
 
+export interface NewsReference {
+  headline: string
+  source: string
+  whyItMatters: string
+}
+
+export interface IndustrySnapshot {
+  trendingNow: string
+  peerMoves: string
+  newsReferences: NewsReference[]
+  communityInsight: string
+}
+
+export interface PilotBlueprint {
+  processToAutomate: string
+  aiApproach: string
+  firstMilestone: string
+  measureThis: string
+  estimatedROI: string
+}
+
+export interface RiskItem {
+  risk: string
+  severity: 'high' | 'medium' | 'low'
+  mitigation: string
+}
+
 export interface AuditReport {
   companyName: string
   generatedAt: string
   overallScore: number
   readinessLevel: 'Emerging' | 'Developing' | 'Advancing' | 'Leading'
   executiveSummary: string
+  industrySnapshot: IndustrySnapshot
   categoryScores: CategoryScore[]
   topStrengths: string[]
   criticalGaps: string[]
   recommendations: Recommendation[]
+  pilotBlueprint: PilotBlueprint
+  riskRadar: RiskItem[]
   roadmap: RoadmapItem[]
   quickWins: string[]
   nextSteps: string
