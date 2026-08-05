@@ -2,6 +2,7 @@ services:
   - type: web
     name: signal-newsletter
     runtime: node
+    plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
@@ -16,6 +17,12 @@ services:
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: GROQ_API_KEY
+        sync: false
+      - key: NEWSAPI_KEY
+        sync: false
+      - key: REDDIT_CLIENT_ID
+        sync: false
+      - key: REDDIT_CLIENT_SECRET
         sync: false
       - key: NEXT_PUBLIC_BASE_URL
         sync: false

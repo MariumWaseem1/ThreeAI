@@ -19,7 +19,7 @@ async function sendNewsletterToSubscriber(
   const { Resend } = await import('resend')
   const resend = new Resend(process.env.RESEND_API_KEY)
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://signal-newsletter.vercel.app'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.RENDER_EXTERNAL_URL || 'https://signal-newsletter.onrender.com'
   const unsubUrl = `${baseUrl}/api/unsubscribe?token=${subscriber.unsubscribeToken}`
   const prefsUrl = `${baseUrl}/preferences?token=${subscriber.unsubscribeToken}`
 
