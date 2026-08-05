@@ -46,25 +46,12 @@ async function fetchIndustryIntelligence(industry: string, useCase: string): Pro
   })()
 
   const redditPromise = (async () => {
-    if (!process.env.REDDIT_CLIENT_ID || !process.env.REDDIT_CLIENT_SECRET) return
     try {
-      const authRes = await fetch('https://www.reddit.com/api/v1/access_token', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${Buffer.from(`${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`).toString('base64')}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'grant_type=client_credentials',
-        signal: AbortSignal.timeout(5000),
-      })
-      const auth = await authRes.json()
-      if (!auth.access_token) return
-
       const searchQuery = `AI ${industry} adoption`
       const redditRes = await fetch(
-        `https://oauth.reddit.com/search?q=${encodeURIComponent(searchQuery)}&sort=relevance&t=month&limit=5`,
+        `https://www.reddit.com/search.json?q=${encodeURIComponent(searchQuery)}&sort=relevance&t=month&limit=5`,
         {
-          headers: { 'Authorization': `Bearer ${auth.access_token}`, 'User-Agent': 'ThreeAI/1.0' },
+          headers: { 'User-Agent': 'ThreeAI/1.0' },
           signal: AbortSignal.timeout(5000),
         }
       )
