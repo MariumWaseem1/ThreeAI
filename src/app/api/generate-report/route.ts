@@ -3,7 +3,87 @@ import type { AuditFormData, AuditReport } from '@/types/audit'
 const CONSULTANT_EMAIL = 'mariumw784@gmail.com'
 const BOOKING_LINK = `mailto:${CONSULTANT_EMAIL}?subject=AI%20Strategy%20Call%20Request`
 
-function buildPrompt(data: AuditFormData): string {
+interface IndustryIntel {
+  newsArticles: { title: string; source: string; snippet: string }[]
+  redditInsights: { title: string; subreddit: string; score: number }[]
+}
+
+async function fetchIndustryIntelligence(industry: string, useCase: string): Promise<IndustryIntel> {
+  const result: IndustryIntel = { newsArticles: [], redditInsights: [] }
+
+  const industryKeywords: Record<string, string> = {
+    'Financial Services & Banking': 'AI fintech banking automation',
+    'Healthcare & Life Sciences': 'AI healthcare medical automation',
+    'Retail & E-commerce': 'AI retail ecommerce personalization',
+    'Manufacturing & Supply Chain': 'AI manufacturing supply chain automation',
+    'Technology & Software': 'AI software development tools',
+    'Professional Services': 'AI consulting professional services automation',
+    'Real Estate': 'AI real estate property technology',
+    'Education': 'AI education edtech learning',
+    'Media & Entertainment': 'AI media content creation',
+    'Logistics & Transportation': 'AI logistics transportation routing',
+    'Energy & Utilities': 'AI energy utilities optimization',
+    'Government & Public Sector': 'AI government public sector automation',
+    'Non-profit': 'AI nonprofit organization efficiency',
+  }
+  const query = industryKeywords[industry] || `AI ${industry} automation`
+
+  const newsPromise = (async () => {
+    if (!process.env.NEWSAPI_KEY) return
+    try {
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&from=${weekAgo}&sortBy=relevancy&pageSize=5&language=en&apiKey=${process.env.NEWSAPI_KEY}`
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
+      const data = await res.json()
+      if (data.articles) {
+        result.newsArticles = data.articles.slice(0, 5).map((a: { title: string; source: { name: string }; description: string }) => ({
+          title: a.title || '',
+          source: a.source?.name || '',
+          snippet: (a.description || '').slice(0, 120),
+        }))
+      }
+    } catch { /* continue without news */ }
+  })()
+
+  const redditPromise = (async () => {
+    if (!process.env.REDDIT_CLIENT_ID || !process.env.REDDIT_CLIENT_SECRET) return
+    try {
+      const authRes = await fetch('https://www.reddit.com/api/v1/access_token', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${Buffer.from(`${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`).toString('base64')}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'grant_type=client_credentials',
+        signal: AbortSignal.timeout(5000),
+      })
+      const auth = await authRes.json()
+      if (!auth.access_token) return
+
+      const searchQuery = `AI ${industry} adoption`
+      const redditRes = await fetch(
+        `https://oauth.reddit.com/search?q=${encodeURIComponent(searchQuery)}&sort=relevance&t=month&limit=5`,
+        {
+          headers: { 'Authorization': `Bearer ${auth.access_token}`, 'User-Agent': 'ThreeAI/1.0' },
+          signal: AbortSignal.timeout(5000),
+        }
+      )
+      const redditData = await redditRes.json()
+      if (redditData.data?.children) {
+        result.redditInsights = redditData.data.children.slice(0, 5).map((c: { data: { title: string; subreddit: string; score: number } }) => ({
+          title: c.data.title || '',
+          subreddit: c.data.subreddit || '',
+          score: c.data.score || 0,
+        }))
+      }
+    } catch { /* continue without reddit */ }
+  })()
+
+  await Promise.allSettled([newsPromise, redditPromise])
+  return result
+}
+
+function buildPrompt(data: AuditFormData, intel: IndustryIntel): string {
   const tools = [...data.currentTools, data.customTools].filter(Boolean).join(', ')
 
   return `You are Marium, a senior AI strategy consultant. Write a concise, personalised AI Readiness Audit for ${data.companyName}.
@@ -31,12 +111,22 @@ ANALYSIS FRAMEWORKS (use to guide your thinking, NEVER mention by name in output
 - MEASURE: Baseline before changing anything. Translate time saved into cost.
 - ETHICS: Check data permissions, flag bias risks for ${data.industry}, offer safe alternatives.
 
+LIVE INDUSTRY INTELLIGENCE (reference these in your analysis to show up-to-date awareness):
+${intel.newsArticles.length > 0 ? `Recent ${data.industry} AI news:\n${intel.newsArticles.map(a => `- "${a.title}" (${a.source}): ${a.snippet}`).join('\n')}` : `No recent news available for ${data.industry}.`}
+${intel.redditInsights.length > 0 ? `What ${data.industry} teams are discussing on Reddit:\n${intel.redditInsights.map(r => `- "${r.title}" (r/${r.subreddit}, ${r.score} upvotes)`).join('\n')}` : ''}
+
+Use this intelligence to:
+- Reference specific trends or tools that competitors in ${data.industry} are adopting right now
+- Ground recommendations in what is actually happening in their market this week
+- Make the report feel current and informed, not templated
+
 WRITING RULES:
 1. NEVER use em dashes. Use colons, commas, or periods instead.
 2. Every single field must reference ${data.companyName}, their specific tools, their pain point, or their use case. Zero generic statements allowed.
 3. Be concise. Short punchy sentences. No filler words. No corporate jargon.
 4. Build everything around their business description, AI use case, and pain point.
 5. Show WHAT needs to change and WHY. Never reveal the step-by-step HOW (that is what the strategy call unlocks).
+6. Reference at least one specific industry trend from the live intelligence above.
 
 Generate ONLY valid JSON, no other text:
 
@@ -300,7 +390,8 @@ export async function POST(req: NextRequest) {
     const Anthropic = (await import('@anthropic-ai/sdk')).default
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-    const prompt = buildPrompt(data)
+    const intel = await fetchIndustryIntelligence(data.industry, data.specificAiUseCase)
+    const prompt = buildPrompt(data, intel)
     let reportData: Record<string, unknown> | null = null
 
     for (let attempt = 0; attempt < 2; attempt++) {
